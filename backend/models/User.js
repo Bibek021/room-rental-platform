@@ -4,6 +4,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ['admin', 'landlord', 'tenant'], required: true },
   isVerified: { type: Boolean, default: false },
+  otp: { type: String }, // Store OTP
+  otpExpires: { type: Date }, // OTP expiration time
   createdAt: { type: Date, default: Date.now }
 });
 module.exports = mongoose.model('User', userSchema);
