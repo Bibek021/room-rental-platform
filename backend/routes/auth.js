@@ -1,24 +1,25 @@
-require('dotenv').config(); // Add this
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const User = require('../models/User');
+const { authMiddleware, restrictTo } = require('../middleware/auth');
 
-// Debug environment variables
 console.log('auth.js - EMAIL:', process.env.EMAIL);
 console.log('auth.js - EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD);
 
 const transporter = nodemailer.createTransport({
-  service: 'Gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL,
     pass: process.env.EMAIL_PASSWORD,
   },
 });
 
-// Verify transporter
 transporter.verify((err, success) => {
   if (err) {
     console.error('Transporter error:', err);
@@ -116,6 +117,10 @@ router.post('/login', async (req, res) => {
     console.error('Login error:', err);
     res.status(500).json({ message: 'Server error' });
   }
+});
+
+router.get('/protected', authMiddleware, restrictTo('admin', 'landlord'), (req, res) => {
+  res.json({ message: `Hello ${req.user.role}, this is a protected route!` });
 });
 
 module.exports = router;
