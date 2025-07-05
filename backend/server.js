@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
+const roomRoutes = require('./routes/room');
 
 dotenv.config();
 const app = express();
@@ -16,6 +17,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/room', roomRoutes);
 
 app.get('/', (req, res) => res.send('Room Rental Backend'));
 
