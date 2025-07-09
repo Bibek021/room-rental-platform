@@ -24,9 +24,9 @@ const Register = () => {
         password,
         role
       });
-      // Purpose: Redirect to login after successful registration
+      // Purpose: Redirect to email verification with email
       alert('Registration successful! Check your email for OTP.');
-      navigate('/login');
+      navigate('/verify-email', { state: { email } });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }

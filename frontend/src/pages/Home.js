@@ -37,7 +37,7 @@ const Home = () => {
         <MapContainer center={[40.712776, -74.005974]} zoom={13} style={{ height: '100%', width: '100%' }}>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           {rooms.map(room => (
             room.location && room.location.coordinates && (
@@ -45,7 +45,7 @@ const Home = () => {
                 <Popup>
                   <b>{room.title}</b><br />
                   {room.description}<br />
-                  Price: ${room.price}<br />
+                  Price: Rs {room.price}<br />
                   Address: {room.address}
                 </Popup>
               </Marker>
