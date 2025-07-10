@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const path = require('path');
 
 // Purpose: Import route handlers for authentication, rooms, and requests
 const authRoutes = require('./routes/auth');
@@ -20,6 +21,9 @@ app.use(cors());
 
 // Purpose: Parse incoming JSON requests
 app.use(express.json());
+
+//Serve static files from uploads for image access
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Purpose: Connect to MongoDB Atlas using MONGO_URI from .env
 mongoose.connect(process.env.MONGO_URI)
