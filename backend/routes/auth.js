@@ -1,4 +1,4 @@
-require('dotenv').config(); // Add this
+require('dotenv').config();
   const express = require('express');
   const router = express.Router();
   const bcrypt = require('bcryptjs');
@@ -32,13 +32,16 @@ require('dotenv').config(); // Add this
 
   // Purpose: Register a new user
   router.post('/register', async (req, res) => {
-    const { email, password, role } = req.body;
+    const { name, email, password, role } = req.body;
     try {
       if (!email || !password || !role) {
-        return res.status(400).json({ message: 'All fields are required' });
+        return res.status(400).json({ message: 'Email, password, and role are required' });
       }
       if (!['admin', 'landlord', 'tenant'].includes(role)) {
         return res.status(400).json({ message: 'Invalid role' });
+      }
+      if (['landlord', 'tenant'].includes(role) && !name) {
+        return res.status(400).json({ message: 'Name is required for landlord and tenant roles' });
       }
       let user = await User.findOne({ email });
       if (user) {
@@ -47,6 +50,7 @@ require('dotenv').config(); // Add this
       const otp = generateOTP();
       const otpExpires = Date.now() + 10 * 60 * 1000;
       user = new User({
+        name: name || undefined,
         email,
         password: await bcrypt.hash(password, 10),
         role,
@@ -125,7 +129,7 @@ require('dotenv').config(); // Add this
   // Purpose: Get user profile
   router.get('/profile', authMiddleware, async (req, res) => {
     try {
-      const user = await User.findById(req.user.id).select('email role');
+      const user = await User.findById(req.user.id).select('name email role');
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }

@@ -56,7 +56,7 @@
                 <p><strong>Room:</strong> {request.room?.title || 'N/A'}</p>
                 <p><strong>Address:</strong> {request.room?.location?.address || 'N/A'}</p>
                 <p><strong>Price:</strong> Rs {request.room?.price || 'N/A'}</p>
-                <p><strong>Tenant:</strong> {request.tenant?.name || 'N/A'} ({request.tenant?.email || 'N/A'})</p>
+                <p><strong>Tenant:</strong> {request.tenant?.name?.trim() || 'Unknown'} ({request.tenant?.email || 'N/A'})</p>
                 {userRole === 'landlord' && (
                   <p><strong>Message:</strong> {request.message || 'No message provided'}</p>
                 )}
