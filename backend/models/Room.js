@@ -46,7 +46,7 @@ const mongoose = require('mongoose');
         message: '1 to 3 images are required'
       }
     }
-  });
+  }, { timestamps: true });
 
   roomSchema.index({ location: '2dsphere' });
 

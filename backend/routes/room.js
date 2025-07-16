@@ -10,7 +10,7 @@ const express = require('express');
   // Purpose: Configure multer for file uploads
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'uploads/');
+      cb(null, 'Uploads/');
     },
     filename: (req, file, cb) => {
       const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '_');
@@ -85,7 +85,7 @@ const express = require('express');
         const { lat, lng } = geoResponse.data.results[0].geometry;
         coordinates = [lng, lat];
       }
-      const images = req.files.map(file => `/uploads/${file.filename}`);
+      const images = req.files.map(file => `/Uploads/${file.filename}`);
       const room = new Room({
         title,
         description,
