@@ -118,6 +118,17 @@ const express = require('express');
     }
   });
 
+  // Get rooms listed by the authenticated landlord
+  router.get('/my-rooms', authMiddleware, restrictTo('landlord'), async (req, res) => {
+    try {
+      const rooms = await Room.find({ landlord: req.user.id }).populate('category landlord', 'name email');
+      res.json(rooms);
+    } catch (err) {
+      console.error('Landlord rooms fetch error:', err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
+
   // Find rooms near a location
   router.get('/near', async (req, res) => {
     const { lat, lng, maxDistance } = req.query;

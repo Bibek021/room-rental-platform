@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
   import 'leaflet/dist/leaflet.css';
   import L from 'leaflet';
   import moment from 'moment';
+  import { setAuthHeader } from '../utils/auth'; // Assuming you have this utility
 
   // Fix Leaflet marker icon issue
   delete L.Icon.Default.prototype._getIconUrl;
@@ -17,19 +18,27 @@ import { useState, useEffect } from 'react';
     const [rooms, setRooms] = useState([]);
     const [error, setError] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
+    const [userRole, setUserRole] = useState(null);
 
-    // Purpose: Fetch rooms from backend
+    // Purpose: Fetch user role and rooms
     useEffect(() => {
-      const fetchRooms = async () => {
+      const fetchData = async () => {
         try {
-          const response = await axios.get(`${process.env.REACT_APP_API_URL}/room`);
-          setRooms(response.data);
+          // Fetch user role (assuming /api/auth/me returns user data)
+          setAuthHeader();
+          const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/auth/me`);
+          setUserRole(userResponse.data.role);
+
+          // Fetch rooms based on role
+          const endpoint = userResponse.data.role === 'landlord' ? '/room/my-rooms' : '/room';
+          const roomsResponse = await axios.get(`${process.env.REACT_APP_API_URL}${endpoint}`);
+          setRooms(roomsResponse.data);
         } catch (err) {
-          console.error('Room fetch error:', err.response?.data || err.message);
-          setError(err.response?.data?.message || 'Failed to load rooms');
+          console.error('Fetch error:', err.response?.data || err.message);
+          setError(err.response?.data?.message || 'Failed to load data');
         }
       };
-      fetchRooms();
+      fetchData();
     }, []);
 
     // Purpose: Format relative time
@@ -43,7 +52,7 @@ import { useState, useEffect } from 'react';
 
     return (
       <div className="container">
-        <h2>Room Listings</h2>
+        <h2>{userRole === 'landlord' ? 'My Listed Rooms' : 'Room Listings'}</h2>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div>
           <input
@@ -59,13 +68,16 @@ import { useState, useEffect } from 'react';
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {filteredRooms.map(room => (
               <li key={room._id} style={{ border: '1px solid #ccc', margin: '10px 0', padding: '10px', position: 'relative' }}>
-                <span style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '12px', color: '#666' }}>
-                  {formatRelativeTime(room.createdAt)}
-                </span>
+                {room.createdAt && (
+                  <span style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '12px', color: '#666' }}>
+                    {formatRelativeTime(room.createdAt)}
+                  </span>
+                )}
                 <h3>{room.title}</h3>
                 <p>{room.description}</p>
                 <p>Price: Rs {room.price}</p>
                 <p>Address: {room.location?.address || 'Address not available'}</p>
+                {/* <p>Posted by: {room.landlord?.name || 'Unknown'}</p> */}
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   {room.images && room.images.length > 0 ? (
                     room.images.map((image, index) => (
