@@ -1,8 +1,10 @@
-// Purpose: Page for tenants to create a request for a room
+// frontend/src/pages/CreateRequest.js
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { setAuthHeader } from '../utils/auth';
+import './CreateRequest.css';
 
 const CreateRequest = () => {
   const [rooms, setRooms] = useState([]);
@@ -12,7 +14,6 @@ const CreateRequest = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Purpose: Fetch all rooms for selection
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -26,7 +27,6 @@ const CreateRequest = () => {
     fetchRooms();
   }, []);
 
-  // Purpose: Fetch and display details of selected room
   useEffect(() => {
     if (selectedRoom) {
       const room = rooms.find(r => r._id === selectedRoom);
@@ -36,7 +36,6 @@ const CreateRequest = () => {
     }
   }, [selectedRoom, rooms]);
 
-  // Purpose: Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedRoom) {
@@ -45,12 +44,10 @@ const CreateRequest = () => {
     }
     try {
       setAuthHeader();
-      console.log('Sending request payload:', { room: selectedRoom, message }); // Debug
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/request`, {
         room: selectedRoom,
-        message: message || undefined // Ensure message is sent, undefined if empty
+        message: message || undefined,
       });
-      console.log('Request response:', response.data); // Debug
       alert('Request submitted successfully!');
       navigate('/');
     } catch (err) {
@@ -78,21 +75,20 @@ const CreateRequest = () => {
         </select>
 
         {roomDetails && (
-          <div style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}>
+          <div className="room-details">
             <h3>Room Details</h3>
             <p><strong>Title:</strong> {roomDetails.title}</p>
             <p><strong>Description:</strong> {roomDetails.description}</p>
             <p><strong>Price:</strong> Rs {roomDetails.price}</p>
             <p><strong>Address:</strong> {roomDetails.location?.address || 'N/A'}</p>
             <p><strong>Category:</strong> {roomDetails.category?.name || 'N/A'}</p>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <div className="image-preview">
               {roomDetails.images && roomDetails.images.length > 0 ? (
                 roomDetails.images.map((image, index) => (
                   <img
                     key={index}
                     src={`${process.env.REACT_APP_BASE_URL}${image}`}
                     alt={`Room ${roomDetails.title} ${index + 1}`}
-                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                     onError={(e) => console.error(`Failed to load image: ${process.env.REACT_APP_BASE_URL}${image}`)}
                   />
                 ))

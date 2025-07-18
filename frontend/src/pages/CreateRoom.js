@@ -1,10 +1,12 @@
-// Purpose: Page for landlords to create rooms with map and photo uploads
+// frontend/src/pages/CreateRoom.js
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import { setAuthHeader } from '../utils/auth';
 import 'leaflet/dist/leaflet.css';
+import './CreateRoom.css';
 
 const CreateRoom = () => {
   const [title, setTitle] = useState('');
@@ -15,10 +17,10 @@ const CreateRoom = () => {
   const [images, setImages] = useState([]);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState('');
-  const [position, setPosition] = useState([27.7172, 85.3240]); // Default: Kathmandu
+  const [position, setPosition] = useState([27.7172, 85.3240]); // Kathmandu default
   const navigate = useNavigate();
 
-  // Purpose: Fetch categories for dropdown
+  // Fetch categories for dropdown
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -37,7 +39,7 @@ const CreateRoom = () => {
     fetchCategories();
   }, []);
 
-  // Purpose: Handle file input changes
+  // Handle image uploads and validate number of files
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 3) {
@@ -50,12 +52,13 @@ const CreateRoom = () => {
     }
   };
 
-  // Purpose: Handle map clicks to place pin and reverse geocode
+  // Map click handler to update position & address
   const MapClickHandler = () => {
     useMapEvents({
       click(e) {
         const { lat, lng } = e.latlng;
         setPosition([lat, lng]);
+
         axios
           .get('https://api.opencagedata.com/geocode/v1/json', {
             params: {
@@ -67,6 +70,7 @@ const CreateRoom = () => {
           .then(response => {
             if (response.data.results[0]) {
               setAddress(response.data.results[0].formatted);
+              setError('');
             } else {
               setError('Unable to fetch address for this location');
             }
@@ -80,7 +84,7 @@ const CreateRoom = () => {
     return position ? <Marker position={position} /> : null;
   };
 
-  // Purpose: Handle form submission
+  // Form submission to create room
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!category) {
@@ -101,13 +105,14 @@ const CreateRoom = () => {
       formData.append('category', category);
       formData.append('location', JSON.stringify({
         type: 'Point',
-        coordinates: [position[1], position[0]], // [lng, lat]
+        coordinates: [position[1], position[0]], // lng, lat order
       }));
       images.forEach(file => formData.append('images', file));
 
       await axios.post(`${process.env.REACT_APP_API_URL}/room`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
+
       alert('Room created successfully!');
       navigate('/');
     } catch (err) {
@@ -119,58 +124,55 @@ const CreateRoom = () => {
   return (
     <div className="container">
       <h2>Create Room</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={e => setTitle(e.target.value)}
           required
         />
         <textarea
           placeholder="Description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={e => setDescription(e.target.value)}
           required
         />
         <input
           type="number"
           placeholder="Price (Rs)"
           value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          onChange={e => setPrice(e.target.value)}
           required
+          min="0"
+          step="0.01"
         />
         <input
           type="text"
           placeholder="Address (e.g., Thamel, Kathmandu, Nepal)"
           value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          onChange={e => setAddress(e.target.value)}
           required
         />
-        <div style={{ height: '200px', margin: '10px 0' }}>
-          <MapContainer
-            center={position}
-            zoom={13}
-            style={{ height: '100%', width: '100%' }}
-          >
+
+        <div className="map-container">
+          <MapContainer center={position} zoom={13} style={{ height: '100%', width: '100%' }}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              attribution='© OpenStreetMap contributors'
             />
             <MapClickHandler />
           </MapContainer>
         </div>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        >
+
+        <select value={category} onChange={e => setCategory(e.target.value)} required>
           <option value="">Select Category</option>
           {categories.map(cat => (
             <option key={cat._id} value={cat._id}>{cat.name}</option>
           ))}
         </select>
+
         <input
           type="file"
           accept="image/*"
@@ -178,7 +180,8 @@ const CreateRoom = () => {
           onChange={handleImageChange}
           required
         />
-        <p>Upload 1-3 images (max 5MB each)</p>
+        <p className="help-text">Upload 1-3 images (max 5MB each)</p>
+
         <button type="submit">Create Room</button>
       </form>
     </div>
