@@ -1,10 +1,7 @@
-// frontend/src/pages/CreateRequest.js
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { setAuthHeader } from '../utils/auth';
-import './CreateRequest.css';
 
 const CreateRequest = () => {
   const [rooms, setRooms] = useState([]);
@@ -14,11 +11,13 @@ const CreateRequest = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Purpose: Fetch only available rooms for selection (existing feature enhanced with new feature)
   useEffect(() => {
     const fetchRooms = async () => {
       try {
+        setAuthHeader();
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/room`);
-        setRooms(response.data);
+        setRooms(response.data.filter(room => room.isAvailable));
       } catch (err) {
         console.error('Room fetch error:', err.response?.data || err.message);
         setError(err.response?.data?.message || 'Failed to load rooms');
@@ -27,6 +26,7 @@ const CreateRequest = () => {
     fetchRooms();
   }, []);
 
+  // Purpose: Fetch and display details of selected room (existing feature, unchanged)
   useEffect(() => {
     if (selectedRoom) {
       const room = rooms.find(r => r._id === selectedRoom);
@@ -36,6 +36,7 @@ const CreateRequest = () => {
     }
   }, [selectedRoom, rooms]);
 
+  // Purpose: Handle form submission (existing feature, unchanged)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedRoom) {
@@ -44,10 +45,12 @@ const CreateRequest = () => {
     }
     try {
       setAuthHeader();
+      console.log('Sending request payload:', { room: selectedRoom, message });
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/request`, {
         room: selectedRoom,
-        message: message || undefined,
+        message: message || undefined
       });
+      console.log('Request response:', response.data);
       alert('Request submitted successfully!');
       navigate('/');
     } catch (err) {
@@ -56,6 +59,7 @@ const CreateRequest = () => {
     }
   };
 
+  // Purpose: Display form with room details and images (existing feature, unchanged)
   return (
     <div className="container">
       <h2>Request Room</h2>
@@ -73,22 +77,22 @@ const CreateRequest = () => {
             </option>
           ))}
         </select>
-
         {roomDetails && (
-          <div className="room-details">
+          <div style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}>
             <h3>Room Details</h3>
             <p><strong>Title:</strong> {roomDetails.title}</p>
             <p><strong>Description:</strong> {roomDetails.description}</p>
             <p><strong>Price:</strong> Rs {roomDetails.price}</p>
             <p><strong>Address:</strong> {roomDetails.location?.address || 'N/A'}</p>
             <p><strong>Category:</strong> {roomDetails.category?.name || 'N/A'}</p>
-            <div className="image-preview">
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               {roomDetails.images && roomDetails.images.length > 0 ? (
                 roomDetails.images.map((image, index) => (
                   <img
                     key={index}
                     src={`${process.env.REACT_APP_BASE_URL}${image}`}
                     alt={`Room ${roomDetails.title} ${index + 1}`}
+                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                     onError={(e) => console.error(`Failed to load image: ${process.env.REACT_APP_BASE_URL}${image}`)}
                   />
                 ))
@@ -98,7 +102,6 @@ const CreateRequest = () => {
             </div>
           </div>
         )}
-
         <textarea
           placeholder="Optional message to landlord"
           value={message}
