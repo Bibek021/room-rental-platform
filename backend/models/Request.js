@@ -11,6 +11,11 @@ const mongoose = require('mongoose');
       ref: 'User',
       required: true
     },
+    landlord:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     message: {
       type: String,
       default: '' // Allow empty string for optional message
@@ -20,6 +25,6 @@ const mongoose = require('mongoose');
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending'
     }
-  });
+  }, { timestamps: true });
 
   module.exports = mongoose.model('Request', requestSchema);

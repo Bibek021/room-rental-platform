@@ -1,4 +1,3 @@
-// Purpose: Page for tenants to create a request for a room
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,12 +11,13 @@ const CreateRequest = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Purpose: Fetch all rooms for selection
+  // Purpose: Fetch only available rooms for selection (existing feature enhanced with new feature)
   useEffect(() => {
     const fetchRooms = async () => {
       try {
+        setAuthHeader();
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/room`);
-        setRooms(response.data);
+        setRooms(response.data.filter(room => room.isAvailable));
       } catch (err) {
         console.error('Room fetch error:', err.response?.data || err.message);
         setError(err.response?.data?.message || 'Failed to load rooms');
@@ -26,7 +26,7 @@ const CreateRequest = () => {
     fetchRooms();
   }, []);
 
-  // Purpose: Fetch and display details of selected room
+  // Purpose: Fetch and display details of selected room (existing feature, unchanged)
   useEffect(() => {
     if (selectedRoom) {
       const room = rooms.find(r => r._id === selectedRoom);
@@ -36,7 +36,7 @@ const CreateRequest = () => {
     }
   }, [selectedRoom, rooms]);
 
-  // Purpose: Handle form submission
+  // Purpose: Handle form submission (existing feature, unchanged)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedRoom) {
@@ -45,12 +45,12 @@ const CreateRequest = () => {
     }
     try {
       setAuthHeader();
-      console.log('Sending request payload:', { room: selectedRoom, message }); // Debug
+      console.log('Sending request payload:', { room: selectedRoom, message });
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/request`, {
         room: selectedRoom,
-        message: message || undefined // Ensure message is sent, undefined if empty
+        message: message || undefined
       });
-      console.log('Request response:', response.data); // Debug
+      console.log('Request response:', response.data);
       alert('Request submitted successfully!');
       navigate('/');
     } catch (err) {
@@ -59,6 +59,7 @@ const CreateRequest = () => {
     }
   };
 
+  // Purpose: Display form with room details and images (existing feature, unchanged)
   return (
     <div className="container">
       <h2>Request Room</h2>
@@ -76,7 +77,6 @@ const CreateRequest = () => {
             </option>
           ))}
         </select>
-
         {roomDetails && (
           <div style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}>
             <h3>Room Details</h3>
@@ -102,7 +102,6 @@ const CreateRequest = () => {
             </div>
           </div>
         )}
-
         <textarea
           placeholder="Optional message to landlord"
           value={message}

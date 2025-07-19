@@ -1,134 +1,131 @@
 import { useState, useEffect } from 'react';
-  import axios from 'axios';
-  import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-  import 'leaflet/dist/leaflet.css';
-  import L from 'leaflet';
-  import moment from 'moment';
-  import { setAuthHeader } from '../utils/auth'; // Assuming you have this utility
+import axios from 'axios';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import moment from 'moment';
+import { setAuthHeader } from '../utils/auth';
 
-  // Fix Leaflet marker icon issue
-  delete L.Icon.Default.prototype._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
-    iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-  });
+// Purpose: Fix Leaflet marker icon issue (existing feature, unchanged)
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+});
 
-  const RoomList = () => {
-    const [rooms, setRooms] = useState([]);
-    const [error, setError] = useState('');
-    const [maxPrice, setMaxPrice] = useState('');
-    const [userRole, setUserRole] = useState(null);
+const RoomList = () => {
+  const [rooms, setRooms] = useState([]);
+  const [error, setError] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [userRole, setUserRole] = useState(null);
 
-    // Purpose: Fetch user role and rooms
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          // Fetch user role (assuming /api/auth/me returns user data)
-          setAuthHeader();
-          const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/auth/me`);
-          setUserRole(userResponse.data.role);
-
-          // Fetch rooms based on role
-          const endpoint = userResponse.data.role === 'landlord' ? '/room/my-rooms' : '/room';
-          const roomsResponse = await axios.get(`${process.env.REACT_APP_API_URL}${endpoint}`);
-          setRooms(roomsResponse.data);
-        } catch (err) {
-          console.error('Fetch error:', err.response?.data || err.message);
-          setError(err.response?.data?.message || 'Failed to load data');
-        }
-      };
-      fetchData();
-    }, []);
-
-    // Purpose: Format relative time
-    const formatRelativeTime = (date) => {
-      return moment(date).fromNow(); // e.g., "1 min ago", "2 days ago"
+  // Purpose: Fetch user role and only available rooms (existing feature enhanced with new feature)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setAuthHeader();
+        const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/auth/me`);
+        setUserRole(userResponse.data.role);
+        const endpoint = userResponse.data.role === 'landlord' ? '/room/my-rooms' : '/room';
+        const roomsResponse = await axios.get(`${process.env.REACT_APP_API_URL}${endpoint}`);
+        setRooms(roomsResponse.data.filter(room => room.isAvailable));
+      } catch (err) {
+        console.error('Fetch error:', err.response?.data || err.message);
+        setError(err.response?.data?.message || 'Failed to load data');
+      }
     };
+    fetchData();
+  }, []);
 
-    const filteredRooms = maxPrice
-      ? rooms.filter(room => room.price <= parseFloat(maxPrice))
-      : rooms;
-
-    return (
-      <div className="container">
-        <h2>{userRole === 'landlord' ? 'My Listed Rooms' : 'Room Listings'}</h2>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div>
-          <input
-            type="number"
-            placeholder="Max Price (Rs)"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-          />
-        </div>
-        {filteredRooms.length === 0 ? (
-          <p>No rooms found.</p>
-        ) : (
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {filteredRooms.map(room => (
-              <li key={room._id} style={{ border: '1px solid #ccc', margin: '10px 0', padding: '10px', position: 'relative' }}>
-                {room.createdAt && (
-                  <span style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '12px', color: '#666' }}>
-                    {formatRelativeTime(room.createdAt)}
-                  </span>
-                )}
-                <h3>{room.title}</h3>
-                <p>{room.description}</p>
-                <p>Price: Rs {room.price}</p>
-                <p>Address: {room.location?.address || 'Address not available'}</p>
-                {/* <p>Posted by: {room.landlord?.name || 'Unknown'}</p> */}
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                  {room.images && room.images.length > 0 ? (
-                    room.images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={`${process.env.REACT_APP_BASE_URL}${image}`}
-                        alt={`Room ${room.title} ${index + 1}`}
-                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                        onError={(e) => console.error(`Failed to load image: ${process.env.REACT_APP_BASE_URL}${image}`)}
-                      />
-                    ))
-                  ) : (
-                    <p>No images available</p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-        {/* Map at the bottom */}
-        {rooms.length > 0 && (
-          <div style={{ marginTop: '20px' }}>
-            <h3>Rooms on Map</h3>
-            <MapContainer
-              center={[27.7172, 85.3240]} // Default center: Kathmandu, Nepal
-              zoom={12}
-              style={{ height: '400px', width: '100%' }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              {rooms
-                .filter(room => room.location?.coordinates?.length === 2)
-                .map(room => (
-                  <Marker
-                    key={room._id}
-                    position={[room.location.coordinates[1], room.location.coordinates[0]]} // [lat, lng]
-                  >
-                    <Popup>
-                      <strong>{room.title}</strong><br />
-                      {room.location.address}<br />
-                      Rs {room.price}
-                    </Popup>
-                  </Marker>
-                ))}
-            </MapContainer>
-          </div>
-        )}
-      </div>
-    );
+  // Purpose: Format relative time for room creation (existing feature, unchanged)
+  const formatRelativeTime = (date) => {
+    return moment(date).fromNow();
   };
 
-  export default RoomList;
+  // Purpose: Filter rooms by max price (existing feature, unchanged)
+  const filteredRooms = maxPrice
+    ? rooms.filter(room => room.price <= parseFloat(maxPrice))
+    : rooms;
+
+  // Purpose: Display rooms with images, map, and price filter (existing feature, unchanged)
+  return (
+    <div className="container">
+      <h2>{userRole === 'landlord' ? 'My Listed Rooms' : 'Room Listings'}</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <div>
+        <input
+          type="number"
+          placeholder="Max Price (Rs)"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+        />
+      </div>
+      {filteredRooms.length === 0 ? (
+        <p>No rooms found.</p>
+      ) : (
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {filteredRooms.map(room => (
+            <li key={room._id} style={{ border: '1px solid #ccc', margin: '10px 0', padding: '10px', position: 'relative' }}>
+              {room.createdAt && (
+                <span style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '12px', color: '#666' }}>
+                  {formatRelativeTime(room.createdAt)}
+                </span>
+              )}
+              <h3>{room.title}</h3>
+              <p>{room.description}</p>
+              <p>Price: Rs {room.price}</p>
+              <p>Address: {room.location?.address || 'Address not available'}</p>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {room.images && room.images.length > 0 ? (
+                  room.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={`${process.env.REACT_APP_BASE_URL}${image}`}
+                      alt={`Room ${room.title} ${index + 1}`}
+                      style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                      onError={(e) => console.error(`Failed to load image: ${process.env.REACT_APP_BASE_URL}${image}`)}
+                    />
+                  ))
+                ) : (
+                  <p>No images available</p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      {rooms.length > 0 && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>Rooms on Map</h3>
+          <MapContainer
+            center={[27.7172, 85.3240]}
+            zoom={12}
+            style={{ height: '400px', width: '100%' }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            {rooms
+              .filter(room => room.location?.coordinates?.length === 2)
+              .map(room => (
+                <Marker
+                  key={room._id}
+                  position={[room.location.coordinates[1], room.location.coordinates[0]]}
+                >
+                  <Popup>
+                    <strong>{room.title}</strong><br />
+                    {room.location.address}<br />
+                    Rs {room.price}
+                  </Popup>
+                </Marker>
+              ))}
+          </MapContainer>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default RoomList;
