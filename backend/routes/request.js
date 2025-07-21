@@ -35,7 +35,7 @@ const sendEmail = async (to, subject, text) => {
   }
 };
 
-// Purpose: Create a request for a room
+// Purpose: Create a request for a room, setting landlord from Room document
 router.post('/', authMiddleware, restrictTo('tenant'), async (req, res) => {
   const { room, message } = req.body;
   try {
@@ -59,7 +59,7 @@ router.post('/', authMiddleware, restrictTo('tenant'), async (req, res) => {
     const request = new Request({
       room,
       tenant: req.user.id,
-      landlord: roomExists.landlord._id,
+      landlord: roomExists.landlord._id, // Purpose: Set landlord from Room document
       message: message || ''
     });
     await request.save();
@@ -126,6 +126,7 @@ router.put('/accept/:id', authMiddleware, restrictTo('landlord'), async (req, re
       console.log(`Room or landlord data missing for request: ${req.params.id}`);
       return res.status(400).json({ message: 'Room or landlord data missing' });
     }
+    // Purpose: Use room.landlord for authorization if request.landlord is missing
     if (request.room.landlord.toString() !== req.user.id) {
       console.log(`Unauthorized access for request: ${req.params.id}, landlord: ${request.room.landlord}, user: ${req.user.id}`);
       return res.status(403).json({ message: 'Unauthorized' });
@@ -139,7 +140,10 @@ router.put('/accept/:id', authMiddleware, restrictTo('landlord'), async (req, re
       return res.status(400).json({ message: 'Tenant data missing' });
     }
 
-    // Update request to approved
+    // Purpose: Set landlord if missing to ensure compatibility
+    if (!request.landlord) {
+      request.landlord = request.room.landlord;
+    }
     request.status = 'approved';
     await request.save();
     console.log(`Request approved: ${req.params.id}`);
@@ -161,7 +165,7 @@ router.put('/accept/:id', authMiddleware, restrictTo('landlord'), async (req, re
       status: 'pending'
     }).populate([
       { path: 'tenant', select: 'name email' },
-      { path: 'room', select: 'title' } // Purpose: Populate room title for auto-rejected requests
+      { path: 'room', select: 'title' }
     ]);
     const emailErrors = [];
     for (const otherRequest of otherRequests) {
@@ -169,6 +173,10 @@ router.put('/accept/:id', authMiddleware, restrictTo('landlord'), async (req, re
         console.log(`Tenant email missing for other request: ${otherRequest._id}`);
         emailErrors.push(`Tenant email missing for request ${otherRequest._id}`);
         continue;
+      }
+      // Purpose: Set landlord if missing for other requests
+      if (!otherRequest.landlord) {
+        otherRequest.landlord = request.room.landlord;
       }
       otherRequest.status = 'rejected';
       await otherRequest.save();
@@ -226,6 +234,7 @@ router.put('/reject/:id', authMiddleware, restrictTo('landlord'), async (req, re
       console.log(`Room or landlord data missing for request: ${req.params.id}`);
       return res.status(400).json({ message: 'Room or landlord data missing' });
     }
+    // Purpose: Use room.landlord for authorization if request.landlord is missing
     if (request.room.landlord.toString() !== req.user.id) {
       console.log(`Unauthorized access for request: ${req.params.id}, landlord: ${request.room.landlord}, user: ${req.user.id}`);
       return res.status(403).json({ message: 'Unauthorized' });
@@ -239,7 +248,10 @@ router.put('/reject/:id', authMiddleware, restrictTo('landlord'), async (req, re
       return res.status(400).json({ message: 'Tenant data missing' });
     }
 
-    // Update request to rejected
+    // Purpose: Set landlord if missing to ensure compatibility
+    if (!request.landlord) {
+      request.landlord = request.room.landlord;
+    }
     request.status = 'rejected';
     await request.save();
     console.log(`Request rejected: ${req.params.id}`);

@@ -1,4 +1,3 @@
-// Purpose: Main App component with routing for the room rental platform
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
@@ -9,9 +8,11 @@ import CreateRoom from './pages/CreateRoom';
 import CreateRequest from './pages/CreateRequest';
 import ManageRequests from './pages/ManageRequests';
 import RoomList from './pages/RoomList';
+import RoomDetails from './pages/RoomDetails'; // Purpose: Import new RoomDetails page
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
+// Purpose: Main App component with routing including new RoomDetails page
 function App() {
   return (
     <Router>
@@ -23,6 +24,7 @@ function App() {
           <Route path="/verify-email" element={<EmailVerification />} />
           <Route path="/" element={<RoomList />} />
           <Route path="/map" element={<Home />} />
+          <Route path="/rooms/:id" element={<RoomDetails />} /> {/* Purpose: Route for room details */}
           <Route
             path="/create-room"
             element={

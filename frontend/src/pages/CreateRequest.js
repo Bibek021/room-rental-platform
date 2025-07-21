@@ -11,12 +11,13 @@ const CreateRequest = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Purpose: Fetch only available rooms for selection (existing feature enhanced with new feature)
+  // Purpose: Fetch only available rooms for selection
   useEffect(() => {
     const fetchRooms = async () => {
       try {
         setAuthHeader();
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/room`);
+        console.log('Rooms response:', response.data);
         setRooms(response.data.filter(room => room.isAvailable));
       } catch (err) {
         console.error('Room fetch error:', err.response?.data || err.message);
@@ -26,7 +27,7 @@ const CreateRequest = () => {
     fetchRooms();
   }, []);
 
-  // Purpose: Fetch and display details of selected room (existing feature, unchanged)
+  // Purpose: Fetch and display details of selected room
   useEffect(() => {
     if (selectedRoom) {
       const room = rooms.find(r => r._id === selectedRoom);
@@ -36,7 +37,7 @@ const CreateRequest = () => {
     }
   }, [selectedRoom, rooms]);
 
-  // Purpose: Handle form submission (existing feature, unchanged)
+  // Purpose: Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedRoom) {
@@ -59,7 +60,6 @@ const CreateRequest = () => {
     }
   };
 
-  // Purpose: Display form with room details and images (existing feature, unchanged)
   return (
     <div className="container">
       <h2>Request Room</h2>

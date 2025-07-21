@@ -1,154 +1,172 @@
 const express = require('express');
-  const router = express.Router();
-  const axios = require('axios');
-  const multer = require('multer');
-  const path = require('path');
-  const Room = require('../models/Room');
-  const Category = require('../models/Category');
-  const { authMiddleware, restrictTo } = require('../middleware/auth');
+const router = express.Router();
+const axios = require('axios');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
+const Room = require('../models/Room');
+const Category = require('../models/Category');
+const { authMiddleware, restrictTo } = require('../middleware/auth');
 
-  // Purpose: Configure multer for file uploads
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'Uploads/');
-    },
-    filename: (req, file, cb) => {
-      const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '_');
-      cb(null, `${Date.now()}-${sanitizedName}`);
+// Purpose: Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'Uploads/');
+  },
+  filename: (req, file, cb) => {
+    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '_');
+    cb(null, `${Date.now()}-${sanitizedName}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only images are allowed'), false);
     }
-  });
+  }
+});
 
-  const upload = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-    fileFilter: (req, file, cb) => {
-      if (file.mimetype.startsWith('image/')) {
-        cb(null, true);
-      } else {
-        cb(new Error('Only images are allowed'), false);
-      }
+// Purpose: Get all categories
+router.get('/category', authMiddleware, async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.json(categories);
+  } catch (err) {
+    console.error('Category fetch error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Purpose: Create a category
+router.post('/category', authMiddleware, restrictTo('admin'), async (req, res) => {
+  const { name } = req.body;
+  try {
+    if (!name) {
+      return res.status(400).json({ message: 'Category name is required' });
     }
-  });
+    const category = new Category({ name });
+    await category.save();
+    res.status(201).json({ message: 'Category created', category });
+  } catch (err) {
+    console.error('Category creation error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
-  // Get all categories (authenticated users)
-  router.get('/category', authMiddleware, async (req, res) => {
-    try {
-      const categories = await Category.find();
-      res.json(categories);
-    } catch (err) {
-      console.error('Category fetch error:', err);
-      res.status(500).json({ message: 'Server error' });
+// Purpose: Create a room
+router.post('/', authMiddleware, restrictTo('landlord'), upload.array('images', 3), async (req, res) => {
+  const { title, description, price, address, category, location } = req.body;
+  try {
+    if (!title || !description || !price || !address || !category || !req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'All required fields, including 1-3 images, must be provided' });
     }
-  });
-
-  // Create a category (admin only)
-  router.post('/category', authMiddleware, restrictTo('admin'), async (req, res) => {
-    const { name } = req.body;
-    try {
-      if (!name) {
-        return res.status(400).json({ message: 'Category name is required' });
-      }
-      const category = new Category({ name });
-      await category.save();
-      res.status(201).json({ message: 'Category created', category });
-    } catch (err) {
-      console.error('Category creation error:', err);
-      res.status(500).json({ message: 'Server error' });
-    }
-  });
-
-  // Create a room (landlord only)
-  router.post('/', authMiddleware, restrictTo('landlord'), upload.array('images', 3), async (req, res) => {
-    const { title, description, price, address, category, location } = req.body;
-    try {
-      if (!title || !description || !price || !address || !category || !req.files || req.files.length === 0) {
-        return res.status(400).json({ message: 'All required fields, including 1-3 images, must be provided' });
-      }
-      let coordinates;
-      if (location) {
-        coordinates = JSON.parse(location).coordinates;
-      } else {
-        const geoResponse = await axios.get('https://api.opencagedata.com/geocode/v1/json', {
-          params: {
-            q: address,
-            key: process.env.OPENCAGE_API_KEY,
-            limit: 1
-          }
-        });
-        if (geoResponse.data.status.code !== 200 || !geoResponse.data.results[0]) {
-          console.error('Geocoding error:', geoResponse.data);
-          return res.status(400).json({
-            message: 'Invalid address',
-            details: geoResponse.data.status.message || 'Address not found.'
-          });
+    let coordinates;
+    if (location) {
+      coordinates = JSON.parse(location).coordinates;
+    } else {
+      const geoResponse = await axios.get('https://api.opencagedata.com/geocode/v1/json', {
+        params: {
+          q: address,
+          key: process.env.OPENCAGE_API_KEY,
+          limit: 1
         }
-        const { lat, lng } = geoResponse.data.results[0].geometry;
-        coordinates = [lng, lat];
-      }
-      const images = req.files.map(file => `/Uploads/${file.filename}`);
-      const room = new Room({
-        title,
-        description,
-        price,
-        location: {
-          type: 'Point',
-          coordinates,
-          address
-        },
-        category,
-        landlord: req.user.id,
-        images
       });
-      await room.save();
-      res.status(201).json({ message: 'Room created successfully', room });
-    } catch (err) {
-      console.error('Room creation error:', err);
-      res.status(500).json({ message: 'Server error', error: err.message });
+      if (geoResponse.data.status.code !== 200 || !geoResponse.data.results[0]) {
+        console.error('Geocoding error:', geoResponse.data);
+        return res.status(400).json({
+          message: 'Invalid address',
+          details: geoResponse.data.status.message || 'Address not found.'
+        });
+      }
+      const { lat, lng } = geoResponse.data.results[0].geometry;
+      coordinates = [lng, lat];
     }
-  });
+    const images = req.files.map(file => `/Uploads/${file.filename}`);
+    const room = new Room({
+      title,
+      description,
+      price,
+      location: {
+        type: 'Point',
+        coordinates,
+        address
+      },
+      category,
+      landlord: req.user.id,
+      images
+    });
+    await room.save();
+    res.status(201).json({ message: 'Room created successfully', room });
+  } catch (err) {
+    console.error('Room creation error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
 
-  // Get all rooms (public)
-  router.get('/', async (req, res) => {
-    try {
-      const rooms = await Room.find().populate('category landlord', 'name email');
-      res.json(rooms);
-    } catch (err) {
-      console.error('Room fetch error:', err);
-      res.status(500).json({ message: 'Server error' });
-    }
-  });
+// Purpose: Get all rooms
+router.get('/', async (req, res) => {
+  try {
+    const rooms = await Room.find().populate('category landlord', 'name email');
+    res.json(rooms);
+  } catch (err) {
+    console.error('Room fetch error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
-  // Get rooms listed by the authenticated landlord
-  router.get('/my-rooms', authMiddleware, restrictTo('landlord'), async (req, res) => {
-    try {
-      const rooms = await Room.find({ landlord: req.user.id }).populate('category landlord', 'name email');
-      res.json(rooms);
-    } catch (err) {
-      console.error('Landlord rooms fetch error:', err);
-      res.status(500).json({ message: 'Server error' });
-    }
-  });
+// Purpose: Get rooms listed by the authenticated landlord
+router.get('/my-rooms', authMiddleware, restrictTo('landlord'), async (req, res) => {
+  try {
+    const rooms = await Room.find({ landlord: req.user.id }).populate('category landlord', 'name email');
+    res.json(rooms);
+  } catch (err) {
+    console.error('Landlord rooms fetch error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
-  // Find rooms near a location
-  router.get('/near', async (req, res) => {
-    const { lat, lng, maxDistance } = req.query;
-    try {
-      const rooms = await Room.find({
-        location: {
-          $near: {
-            $geometry: {
-              type: 'Point',
-              coordinates: [parseFloat(lng), parseFloat(lat)]
-            },
-            $maxDistance: parseInt(maxDistance) || 10000
-          }
+// Purpose: Find rooms near a location
+router.get('/near', async (req, res) => {
+  const { lat, lng, maxDistance } = req.query;
+  try {
+    const rooms = await Room.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [parseFloat(lng), parseFloat(lat)]
+          },
+          $maxDistance: parseInt(maxDistance) || 10000
         }
-      }).populate('category landlord', 'name email');
-      res.json(rooms);
-    } catch (err) {
-      console.error('Geo query error:', err);
-      res.status(500).json({ message: 'Server error' });
-    }
-  });
+      }
+    }).populate('category landlord', 'name email');
+    res.json(rooms);
+  } catch (err) {
+    console.error('Geo query error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
-  module.exports = router;
+// Purpose: Get single room details for RoomDetails page
+router.get('/:id', async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid room ID' });
+    }
+    const room = await Room.findById(req.params.id).populate('category landlord', 'name email');
+    if (!room) {
+      return res.status(404).json({ message: 'Room not found' });
+    }
+    res.json(room);
+  } catch (err) {
+    console.error('Room fetch error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+module.exports = router;
