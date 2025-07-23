@@ -23,12 +23,15 @@ const RoomDetails = () => {
   const [message, setMessage] = useState('');
   const [requestError, setRequestError] = useState('');
   const [requestSuccess, setRequestSuccess] = useState('');
+  const [userRole, setUserRole] = useState(null);
 
-  // Purpose: Fetch room details
+  // Purpose: Fetch room details and user role
   useEffect(() => {
     const fetchRoom = async () => {
       try {
         setAuthHeader();
+        const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/auth/me`);
+        setUserRole(userResponse.data.role);
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/room/${id}`);
         if (!response.data.isAvailable) {
           setError('This room is not available');
@@ -101,23 +104,25 @@ const RoomDetails = () => {
           </div>
         </div>
         <div>
-          <form onSubmit={handleRequest} style={{ marginBottom: '20px' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '10px' }}>Request This Room</h3>
-            <textarea
-              placeholder="Optional message to landlord"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '10px' }}
-            />
-            <button
-              type="submit"
-              style={{ backgroundColor: '#007bff', color: 'white', padding: '8px 16px', borderRadius: '4px' }}
-            >
-              Submit Request
-            </button>
-            {requestError && <p style={{ color: 'red', marginTop: '10px' }}>{requestError}</p>}
-            {requestSuccess && <p style={{ color: 'green', marginTop: '10px' }}>{requestSuccess}</p>}
-          </form>
+          {userRole !== 'landlord' && (
+            <form onSubmit={handleRequest} style={{ marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '10px' }}>Request This Room</h3>
+              <textarea
+                placeholder="Optional message to landlord"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '10px' }}
+              />
+              <button
+                type="submit"
+                style={{ backgroundColor: '#007bff', color: 'white', padding: '8px 16px', borderRadius: '4px' }}
+              >
+                Submit Request
+              </button>
+              {requestError && <p style={{ color: 'red', marginTop: '10px' }}>{requestError}</p>}
+              {requestSuccess && <p style={{ color: 'green', marginTop: '10px' }}>{requestSuccess}</p>}
+            </form>
+          )}
           {room.location?.coordinates?.length === 2 && (
             <div style={{ height: '300px', width: '100%' }}>
               <MapContainer
