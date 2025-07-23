@@ -31,6 +31,26 @@ const upload = multer({
   }
 });
 
+// Purpose: Proxy Nominatim geocoding requests to avoid CORS issues
+router.get('/geocode', async (req, res) => {
+  try {
+    const { q, format = 'json', limit = 1 } = req.query;
+    if (!q) {
+      return res.status(400).json({ message: 'Query parameter "q" is required' });
+    }
+    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+      params: { q, format, limit },
+      headers: {
+        'User-Agent': 'RoomRentalPlatform/1.0',
+      },
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error('Geocode error:', error.response?.data || error.message);
+    res.status(500).json({ message: 'Failed to fetch geocode data' });
+  }
+});
+
 // Purpose: Get all categories
 router.get('/category', authMiddleware, async (req, res) => {
   try {

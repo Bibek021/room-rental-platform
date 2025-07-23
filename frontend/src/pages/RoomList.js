@@ -35,14 +35,11 @@ const RoomList = () => {
         let params = {};
 
         if (userRole !== 'landlord' && searchLocation) {
-          const geoResponse = await axios.get('https://nominatim.openstreetmap.org/search', {
+          const geoResponse = await axios.get(`${process.env.REACT_APP_API_URL}/room/geocode`, {
             params: {
               q: searchLocation,
               format: 'json',
               limit: 1,
-            },
-            headers: {
-              'User-Agent': 'RoomRentalPlatform/1.0',
             },
           });
 
@@ -97,13 +94,11 @@ const RoomList = () => {
     setSearchError('');
   };
 
-  // Sort rooms by createdAt (newest first) and take the top 5 for the slider
   const newRooms = [...rooms]
     .filter(room => room.isAvailable && room.createdAt)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 5);
 
-  // Slider navigation functions
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % (newRooms.length || 1));
   };
@@ -116,7 +111,6 @@ const RoomList = () => {
     setCurrentSlide(index);
   };
 
-  // Auto-slide effect
   useEffect(() => {
     if (newRooms.length === 0) return;
     const interval = setInterval(() => {
