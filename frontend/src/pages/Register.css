@@ -1,0 +1,313 @@
+.register-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 15px;
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.register-container h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a3c5e;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.register-container .error {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  background-color: #fff5f5;
+  padding: 8px;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.register-form {
+  background-color: #ffffff;
+  padding: 10px; /* Reduced padding */
+  border-radius: 6px; /* Reduced radius */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Reduced shadow */
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Reduced gap */
+  box-sizing: border-box;
+  overflow: hidden; /* Prevent overflow */
+}
+
+.register-input {
+  width: 100%;
+  padding: 5px 8px; /* Reduced padding */
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  max-width: 100%; /* Ensure no overflow */
+}
+
+.register-input:hover {
+  border-color: #005f99;
+  box-shadow: 0 0 3px rgba(0, 95, 153, 0.2); /* Reduced shadow */
+}
+
+.register-input:focus {
+  outline: none;
+  border-color: #005f99;
+  box-shadow: 0 0 5px rgba(0, 95, 153, 0.3); /* Reduced shadow */
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%; /* Contain within form */
+}
+
+.register-input[type="password"] {
+  width: 100%;
+  padding-right: 30px; /* Reduced for tighter fit */
+  box-sizing: border-box;
+  max-width: 100%; /* Prevent overflow */
+}
+
+.show-password-toggle {
+  display: none; /* Hide default checkbox */
+}
+
+.show-password-label {
+  position: absolute;
+  right: 6px; /* Reduced right spacing */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px; /* Reduced icon size */
+  height: 16px;
+  cursor: pointer;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23495057' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3'/></svg>") no-repeat center;
+  background-size: 16px;
+  transition: background 0.2s ease;
+  box-sizing: border-box; /* Contain icon */
+}
+
+.show-password-toggle:checked + .show-password-label {
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23495057' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3'/><line x1='3' y1='3' x2='21' y2='21'/></svg>") no-repeat center;
+  background-size: 16px;
+}
+
+.register-input[type="file"] {
+  width: 100%;
+  padding: 5px 8px; /* Reduced padding */
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+  cursor: pointer;
+  max-width: 100%; /* Prevent overflow */
+  overflow: hidden; /* Truncate long file names */
+  white-space: nowrap; /* Prevent wrapping */
+  text-overflow: ellipsis; /* Show ellipsis */
+}
+
+.register-input[type="file"]::-webkit-file-upload-button {
+  background-color: #005f99;
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px; /* Reduced padding */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  margin-right: 6px; /* Reduced margin */
+  box-sizing: border-box; /* Contain button */
+}
+
+.register-input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: #004a7c;
+}
+
+.register-input[type="file"]:focus {
+  outline: none;
+  border-color: #005f99;
+  box-shadow: 0 0 5px rgba(0, 95, 153, 0.3);
+}
+
+.register-select {
+  width: 100%;
+  padding: 5px 24px 5px 8px; /* Adjusted for tighter fit */
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 12 8'><path fill='%231a3c5e' d='M1.41 0.59L6 5.17L10.59 0.59L12 2L6 8L0 2L1.41 0.59Z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 8px;
+  max-width: 100%; /* Prevent overflow */
+}
+
+.register-select:hover {
+  border-color: #005f99;
+  box-shadow: 0 0 3px rgba(0, 95, 153, 0.2);
+}
+
+.register-select:focus {
+  outline: none;
+  border-color: #005f99;
+  box-shadow: 0 0 5px rgba(0, 95, 153, 0.3);
+}
+
+.register-button {
+  width: 100%;
+  padding: 8px; /* Reduced padding */
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  background-color: #005f99;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-sizing: border-box;
+  max-width: 100%; /* Ensure button stays within form */
+}
+
+.register-button:hover {
+  background-color: #004a7c;
+  transform: translateY(-2px);
+}
+
+.register-button:focus {
+  outline: 2px solid #005f99;
+  outline-offset: 2px;
+}
+
+.login-link {
+  font-size: 0.9rem;
+  color: #495057;
+  margin-top: 10px; /* Reduced margin */
+  text-align: center;
+  max-width: 360px;
+  box-sizing: border-box;
+}
+
+.login-link a {
+  color: #005f99;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    padding: 10px;
+    margin: 15px auto;
+  }
+
+  .register-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .register-form {
+    padding: 8px;
+    max-width: 360px;
+  }
+
+  .register-input,
+  .register-select {
+    padding: 4px 6px; /* Reduced padding */
+    font-size: 0.95rem;
+  }
+
+  .register-input[type="password"] {
+    padding-right: 26px; /* Adjusted for smaller screen */
+  }
+
+  .register-input[type="file"]::-webkit-file-upload-button {
+    padding: 4px 8px; /* Reduced padding */
+    font-size: 0.95rem;
+  }
+
+  .register-button {
+    padding: 6px;
+  }
+
+  .error,
+  .login-link {
+    max-width: 320px;
+  }
+
+  .show-password-label {
+    width: 14px;
+    height: 14px;
+    background-size: 14px;
+    right: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 6px;
+    margin: 10px auto;
+  }
+
+  .register-container h2 {
+    font-size: 1.3rem;
+  }
+
+  .register-form {
+    padding: 6px;
+    max-width: 100%;
+  }
+
+  .register-input,
+  .register-select {
+    padding: 3px 5px; /* Further reduced padding */
+    font-size: 0.9rem;
+  }
+
+  .register-input[type="password"] {
+    padding-right: 22px; /* Adjusted for smaller screen */
+  }
+
+  .register-input[type="file"]::-webkit-file-upload-button {
+    padding: 3px 6px; /* Reduced padding */
+    font-size: 0.9rem;
+  }
+
+  .register-button {
+    padding: 5px;
+    font-size: 0.95rem;
+  }
+
+  .error,
+  .login-link {
+    font-size: 0.85rem;
+    max-width: 100%;
+  }
+
+  .show-password-label {
+    width: 12px;
+    height: 12px;
+    background-size: 12px;
+    right: 5px;
+  }
+}
