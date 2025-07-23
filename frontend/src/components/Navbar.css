@@ -1,1 +1,102 @@
+.navbar {
+  background-color: #1877f2; /* Facebook blue */
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
 
+.navbar-title {
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 15px;
+}
+
+.navbar ul li a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.navbar ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.logout-btn:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .navbar-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .navbar ul {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .navbar ul li a,
+  .logout-btn {
+    font-size: 0.95rem;
+    padding: 8px;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-title {
+    font-size: 1.3rem;
+  }
+
+  .navbar ul li a,
+  .logout-btn {
+    font-size: 0.9rem;
+  }
+}

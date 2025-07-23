@@ -1,6 +1,6 @@
-// Purpose: Navigation bar with role-based links
 import { Link, useNavigate } from 'react-router-dom';
 import { isAuthenticated, getUserRole, logout } from '../utils/auth';
+import './Navbar.css';
 
 const Navbar = () => {
   const isAuth = isAuthenticated();
@@ -13,7 +13,8 @@ const Navbar = () => {
   };
 
   return (
-    <nav style={{ background: '#007bff', padding: '10px', color: 'white' }}>
+    <nav className="navbar">
+      <h1 className="navbar-title">Roomfinder</h1>
       <ul style={{ display: 'flex', listStyle: 'none', justifyContent: 'space-around' }}>
         <li><Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Home</Link></li>
         {isAuth && role === 'landlord' && (
@@ -32,7 +33,12 @@ const Navbar = () => {
           </>
         ) : (
           <li>
-            <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
+            <button
+              onClick={handleLogout}
+              style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}
+              className="logout-btn"
+              aria-label="Logout of your account"
+            >
               Logout
             </button>
           </li>
