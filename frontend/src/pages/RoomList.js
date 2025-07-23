@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Link } from 'react-router-dom';
-import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import moment from 'moment';
 import { setAuthHeader } from '../utils/auth';
 import './RoomList.css';
 
-// Purpose: Fix Leaflet marker icon issue (existing feature, unchanged)
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
@@ -23,9 +21,9 @@ const RoomList = () => {
   const [userRole, setUserRole] = useState(null);
   const [searchLocation, setSearchLocation] = useState('');
   const [searchError, setSearchError] = useState('');
-  const [mapCenter, setMapCenter] = useState([27.7172, 85.3240]); // Default: Kathmandu
+  const [mapCenter, setMapCenter] = useState([27.7172, 85.3240]);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Purpose: Fetch user role and rooms with location search
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,8 +34,7 @@ const RoomList = () => {
         let endpoint = userResponse.data.role === 'landlord' ? '/room/my-rooms' : '/room';
         let params = {};
 
-        if (userResponse.data.role !== 'landlord' && searchLocation) {
-          // Purpose: Geocode place name to coordinates
+        if (userRole !== 'landlord' && searchLocation) {
           const geoResponse = await axios.get('https://nominatim.openstreetmap.org/search', {
             params: {
               q: searchLocation,
@@ -79,32 +76,55 @@ const RoomList = () => {
       }
     };
     fetchData();
-  }, [searchLocation]);
+  }, [searchLocation, userRole]);
 
-  // Purpose: Format relative time for room creation (existing feature, unchanged)
   const formatRelativeTime = (date) => {
     return moment(date).fromNow();
   };
 
-  // Purpose: Filter rooms by max price (existing feature, unchanged)
   const filteredRooms = maxPrice
     ? rooms.filter(room => room.price <= parseFloat(maxPrice))
     : rooms;
 
-  // Purpose: Handle location search submission
   const handleSearch = (e) => {
     e.preventDefault();
     setSearchLocation(e.target.elements.location.value);
   };
 
-  // Purpose: Reset search
   const handleResetSearch = () => {
     setSearchLocation('');
     setMapCenter([27.7172, 85.3240]);
     setSearchError('');
   };
 
-  // Purpose: Display rooms with max price filter, location search below it, clickable links, and map
+  // Sort rooms by createdAt (newest first) and take the top 5 for the slider
+  const newRooms = [...rooms]
+    .filter(room => room.isAvailable && room.createdAt)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5);
+
+  // Slider navigation functions
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % (newRooms.length || 1));
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + newRooms.length) % (newRooms.length || 1));
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
+
+  // Auto-slide effect
+  useEffect(() => {
+    if (newRooms.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % newRooms.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [newRooms.length]);
+
   return (
     <div className="container">
       <h2 className="title">{userRole === 'landlord' ? 'My Listed Rooms' : 'Room Listings'}</h2>
@@ -139,6 +159,59 @@ const RoomList = () => {
           </div>
         )}
       </div>
+      {newRooms.length > 0 && (
+        <div className="new-listings">
+          <h3 className="new-listings-title">New Listings</h3>
+          <div className="slider-container" onMouseEnter={() => clearInterval(window.sliderInterval)} onMouseLeave={() => {
+            window.sliderInterval = setInterval(() => {
+              setCurrentSlide((prev) => (prev + 1) % newRooms.length);
+            }, 3000);
+          }}>
+            <div className="slider-wrapper" style={{ transform: `translateX(-${currentSlide * (100 / (window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1))}%)` }}>
+              {newRooms.map((room, index) => (
+                <div key={room._id} className="slider-item">
+                  <Link to={`/rooms/${room._id}`} className="slider-link" aria-label={`View details for ${room.title}`}>
+                    {room.images && room.images.length > 0 ? (
+                      <div className="slider-image-wrapper">
+                        <img
+                          src={`${process.env.REACT_APP_BASE_URL}${room.images[0]}`}
+                          alt={`Room ${room.title}`}
+                          className="slider-image"
+                          onError={(e) => console.error(`Failed to load image: ${process.env.REACT_APP_BASE_URL}${room.images[0]}`)}
+                        />
+                        <div className="slider-image-overlay"></div>
+                      </div>
+                    ) : (
+                      <div className="no-image">No Image Available</div>
+                    )}
+                    <div className="slider-content">
+                      <h4 className="slider-title">{room.title}</h4>
+                      <p className="slider-price">Price: Rs {room.price}</p>
+                      <p className="slider-address">{room.location?.address || 'Address not available'}</p>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
+            <button className="slider-prev" onClick={prevSlide} aria-label="Previous slide">
+              <span className="chevron left"></span>
+            </button>
+            <button className="slider-next" onClick={nextSlide} aria-label="Next slide">
+              <span className="chevron right"></span>
+            </button>
+            <div className="slider-dots">
+              {newRooms.map((_, index) => (
+                <button
+                  key={index}
+                  className={`slider-dot ${index === currentSlide ? 'active' : ''}`}
+                  onClick={() => goToSlide(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                ></button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       {filteredRooms.length === 0 ? (
         <p>No rooms found.</p>
       ) : (

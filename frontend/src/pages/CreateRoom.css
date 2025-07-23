@@ -1,1 +1,125 @@
+.container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
 
+.container h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #1a3c5e;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.container p[style*="color: red"] {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  background-color: #fff5f5;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.container input,
+.container textarea,
+.container select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+}
+
+.container input:focus,
+.container textarea:focus,
+.container select:focus {
+  outline: 2px solid #005f99;
+  border-color: #005f99;
+}
+
+.container textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.container div[style*="height: 200px"] {
+  height: 200px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.container div[style*="height: 200px"] .leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+.container input[type="file"] {
+  padding: 10px 0;
+}
+
+.container p {
+  color: #495057;
+  font-size: 0.85rem;
+  margin: 5px 0;
+}
+
+.container button {
+  background-color: #005f99;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.container button:hover {
+  background-color: #004a7c;
+}
+
+.container button:focus {
+  outline: 2px solid #005f99;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    margin: 15px;
+    padding: 15px;
+  }
+
+  .container h2 {
+    font-size: 1.4rem;
+  }
+
+  .container div[style*="height: 200px"] {
+    height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container h2 {
+    font-size: 1.2rem;
+  }
+
+  .container input,
+  .container textarea,
+  .container select {
+    font-size: 0.95rem;
+  }
+}

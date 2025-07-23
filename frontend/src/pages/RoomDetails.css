@@ -1,0 +1,228 @@
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a3c5e;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.container > div[style*="display: grid"] {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+p[style*="color: red"],
+p[style*="color: green"] {
+  font-size: 0.9rem;
+  padding: 10px;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-sizing: border-box;
+  margin: 10px auto 0;
+}
+
+p[style*="color: red"] {
+  color: #d32f2f;
+  background-color: #fff5f5;
+}
+
+p[style*="color: green"] {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+}
+
+p {
+  font-size: 1rem;
+  color: #495057;
+  margin-bottom: 10px;
+}
+
+p strong {
+  color: #1a3c5e;
+  font-weight: 600;
+}
+
+div[style*="display: flex"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+img[style*="width: 100px"] {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+form[style*="marginBottom: 20px"] {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a3c5e;
+  margin-bottom: 10px;
+}
+
+textarea[style*="width: 100%"] {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  resize: vertical;
+  min-height: 80px;
+}
+
+textarea[style*="width: 100%"]:hover {
+  border-color: #005f99;
+  box-shadow: 0 0 6px rgba(0, 95, 153, 0.2);
+}
+
+textarea[style*="width: 100%"]:focus {
+  outline: none;
+  border-color: #005f99;
+  box-shadow: 0 0 8px rgba(0, 95, 153, 0.3);
+}
+
+button[style*="backgroundColor: #007bff"] {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #005f99;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-sizing: border-box;
+}
+
+button[style*="backgroundColor: #007bff"]:hover {
+  background-color: #004a7c;
+  transform: translateY(-2px);
+}
+
+button[style*="backgroundColor: #007bff"]:focus {
+  outline: 2px solid #005f99;
+  outline-offset: 2px;
+}
+
+div[style*="height: 300px"] {
+  height: 300px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+    margin: 20px auto;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .container > div[style*="display: grid"] {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  form[style*="marginBottom: 20px"] {
+    padding: 15px;
+    max-width: 360px;
+  }
+
+  textarea[style*="width: 100%"] {
+    padding: 7px 10px;
+    font-size: 0.95rem;
+  }
+
+  button[style*="backgroundColor: #007bff"] {
+    padding: 8px 14px;
+  }
+
+  div[style*="height: 300px"] {
+    max-width: 360px;
+  }
+
+  p[style*="color: red"],
+  p[style*="color: green"] {
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  form[style*="marginBottom: 20px"] {
+    padding: 12px;
+    max-width: 100%;
+  }
+
+  textarea[style*="width: 100%"] {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+  }
+
+  button[style*="backgroundColor: #007bff"] {
+    padding: 6px 12px;
+    font-size: 0.95rem;
+  }
+
+  div[style*="height: 300px"] {
+    height: 250px;
+    max-width: 100%;
+  }
+
+  p[style*="color: red"],
+  p[style*="color: green"] {
+    font-size: 0.85rem;
+    max-width: 100%;
+  }
+
+  img[style*="width: 100px"] {
+    width: 80px;
+    height: 80px;
+  }
+}
