@@ -1,0 +1,232 @@
+.navbar {
+  background-color: #2563eb;
+  color: #ffffff;
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 1.5rem;
+}
+
+.navbar-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-title::before {
+  content: '\f015'; /* Font Awesome home icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  justify-content: flex-end;
+  margin: 0;
+  padding: 0;
+  gap: 1.5rem;
+}
+
+.navbar li {
+  display: flex;
+  align-items: center;
+}
+
+.navbar a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navbar a:hover {
+  background-color: #3b82f6;
+  transform: scale(1.05);
+}
+
+.navbar a:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+}
+
+.navbar a[aria-current="page"] {
+  background-color: #60a5fa;
+}
+
+.navbar a[href="/"]::before {
+  content: '\f015'; /* Font Awesome home icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.navbar a[href="/create-room"]::before {
+  content: '\f0fe'; /* Font Awesome plus-square icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.navbar a[href="/create-request"]::before {
+  content: '\f0c5'; /* Font Awesome clipboard icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.navbar a[href="/profile"]::before {
+  content: '\f007'; /* Font Awesome user icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.navbar a[href="/manage-requests"]::before {
+  content: '\f013'; /* Font Awesome cog icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.navbar a[href="/login"]::before {
+  content: '\f090'; /* Font Awesome sign-in-alt icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.navbar a[href="/register"]::before {
+  content: '\f234'; /* Font Awesome user-plus icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn::before {
+  content: '\f2f5'; /* Font Awesome sign-out-alt icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.logout-btn:hover {
+  background-color: #3b82f6;
+  transform: scale(1.05);
+}
+
+.logout-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+}
+
+.navbar-toggle {
+  display: none;
+}
+
+.navbar-toggle-label {
+  display: none;
+  font-size: 1.5rem;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+  }
+
+  .navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .navbar-title {
+    font-size: 1.25rem;
+  }
+
+  .navbar ul {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem 0;
+  }
+
+  .navbar-toggle:checked ~ ul {
+    display: flex;
+  }
+
+  .navbar-toggle-label {
+    display: block;
+  }
+
+  .navbar li {
+    width: 100%;
+  }
+
+  .navbar a,
+  .logout-btn {
+    display: block;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    min-height: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.75rem;
+  }
+
+  .navbar-title {
+    font-size: 1.125rem;
+  }
+
+  .navbar-toggle-label {
+    font-size: 1.25rem;
+  }
+
+  .navbar a,
+  .logout-btn {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+}

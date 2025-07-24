@@ -1,0 +1,26 @@
+/* Purpose: Styles for the Recommendation component, matching RoomList styling */
+.recommendation-container {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .recommendation-title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+  .room-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .room-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 200px;
+    text-decoration: none;
+    color: #333;
+  }
+  .room-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+  }
