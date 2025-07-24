@@ -11,6 +11,7 @@ import RoomList from './pages/RoomList';
 import RoomDetails from './pages/RoomDetails'; // Purpose: Import new RoomDetails page
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
+import Footer from './components/Footer'; // Added Footer import
 
 // Purpose: Main App component with routing including new RoomDetails page
 function App() {
@@ -50,6 +51,7 @@ function App() {
             }
           />
         </Routes>
+        <Footer /> {/* Added Footer component */}
       </div>
     </Router>
   );
