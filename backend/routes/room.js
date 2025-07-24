@@ -1,3 +1,5 @@
+// javascript
+// Purpose: Updated room routes to proxy /recommend endpoint to Flask server, restricted to tenants, preserving existing routes.
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
@@ -6,9 +8,10 @@ const multer = require('multer');
 const path = require('path');
 const Room = require('../models/Room');
 const Category = require('../models/Category');
+const User = require('../models/User');
 const { authMiddleware, restrictTo } = require('../middleware/auth');
 
-// Purpose: Configure multer for file uploads
+// Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'Uploads/');
@@ -31,7 +34,7 @@ const upload = multer({
   }
 });
 
-// Purpose: Proxy Nominatim geocoding requests to avoid CORS issues
+// Proxy Nominatim geocoding requests to avoid CORS issues
 router.get('/geocode', async (req, res) => {
   try {
     const { q, format = 'json', limit = 1 } = req.query;
@@ -51,7 +54,7 @@ router.get('/geocode', async (req, res) => {
   }
 });
 
-// Purpose: Get all categories
+// Get all categories
 router.get('/category', authMiddleware, async (req, res) => {
   try {
     const categories = await Category.find();
@@ -62,7 +65,7 @@ router.get('/category', authMiddleware, async (req, res) => {
   }
 });
 
-// Purpose: Create a category
+// Create a category
 router.post('/category', authMiddleware, restrictTo('admin'), async (req, res) => {
   const { name } = req.body;
   try {
@@ -78,7 +81,7 @@ router.post('/category', authMiddleware, restrictTo('admin'), async (req, res) =
   }
 });
 
-// Purpose: Create a room
+// Create a room
 router.post('/', authMiddleware, restrictTo('landlord'), upload.array('images', 3), async (req, res) => {
   const { title, description, price, address, category, location } = req.body;
   try {
@@ -128,7 +131,7 @@ router.post('/', authMiddleware, restrictTo('landlord'), upload.array('images', 
   }
 });
 
-// Purpose: Get all rooms
+// Get all rooms
 router.get('/', async (req, res) => {
   try {
     const rooms = await Room.find().populate('category landlord', 'name email');
@@ -139,7 +142,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Purpose: Get rooms listed by the authenticated landlord
+// Get rooms listed by the authenticated landlord
 router.get('/my-rooms', authMiddleware, restrictTo('landlord'), async (req, res) => {
   try {
     const rooms = await Room.find({ landlord: req.user.id }).populate('category landlord', 'name email');
@@ -150,7 +153,7 @@ router.get('/my-rooms', authMiddleware, restrictTo('landlord'), async (req, res)
   }
 });
 
-// Purpose: Find rooms near a location
+// Find rooms near a location
 router.get('/near', async (req, res) => {
   const { lat, lng, maxDistance } = req.query;
   try {
@@ -172,7 +175,7 @@ router.get('/near', async (req, res) => {
   }
 });
 
-// Purpose: Get single room details for RoomDetails page
+// Get single room details for RoomDetails page
 router.get('/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -186,6 +189,24 @@ router.get('/:id', async (req, res) => {
   } catch (err) {
     console.error('Room fetch error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// Proxy route for recommendations
+router.post('/recommend', authMiddleware, restrictTo('tenant'), async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const response = await axios.post('http://localhost:5001/recommend', {
+      userId: req.user.id,
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error('Recommendation proxy error:', error);
+    res.status(500).json({ message: error.response?.data?.message || 'Failed to fetch recommendations' });
   }
 });
 

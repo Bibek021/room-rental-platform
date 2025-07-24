@@ -1,10 +1,13 @@
+// javascript
+// Purpose: Updated RoomList page to include recommendations for tenants, using getUserRole from utils/auth, preserving existing filters, slider, and map.
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Link } from 'react-router-dom';
 import L from 'leaflet';
 import moment from 'moment';
-import { setAuthHeader } from '../utils/auth';
+import { setAuthHeader, getUserRole } from '../utils/auth';
+import Recommendation from '../components/Recommendation';
 import './RoomList.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -28,13 +31,17 @@ const RoomList = () => {
     const fetchData = async () => {
       try {
         setAuthHeader();
-        const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/auth/me`);
-        console.log('User response:', userResponse.data);
-        setUserRole(userResponse.data.role);
-        let endpoint = userResponse.data.role === 'landlord' ? '/room/my-rooms' : '/room';
+        const role = getUserRole();
+        setUserRole(role);
+        if (!role) {
+          setError('Please log in to view rooms');
+          return;
+        }
+
+        let endpoint = role === 'landlord' ? '/room/my-rooms' : '/room';
         let params = {};
 
-        if (userRole !== 'landlord' && searchLocation) {
+        if (role !== 'landlord' && searchLocation) {
           const geoResponse = await axios.get(`${process.env.REACT_APP_API_URL}/room/geocode`, {
             params: {
               q: searchLocation,
@@ -73,7 +80,7 @@ const RoomList = () => {
       }
     };
     fetchData();
-  }, [searchLocation, userRole]);
+  }, [searchLocation]);
 
   const formatRelativeTime = (date) => {
     return moment(date).fromNow();
@@ -122,6 +129,7 @@ const RoomList = () => {
   return (
     <div className="container">
       <h2 className="title">{userRole === 'landlord' ? 'My Listed Rooms' : 'Room Listings'}</h2>
+      {userRole === 'tenant' && <Recommendation />}
       {error && <p className="error">{error}</p>}
       <div className="filters">
         <div className="filter-group">
@@ -141,6 +149,7 @@ const RoomList = () => {
                 name="location"
                 placeholder="Enter location (e.g., Kathmandu)"
                 className="search-input"
+                style={{ minWidth: '300px' }}
               />
               <button type="submit" className="button search-button">
                 Search

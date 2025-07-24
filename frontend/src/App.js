@@ -1,3 +1,5 @@
+// javascript
+// Purpose: Updated App component to include Profile page route, preserving existing routes.
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
@@ -8,12 +10,12 @@ import CreateRoom from './pages/CreateRoom';
 import CreateRequest from './pages/CreateRequest';
 import ManageRequests from './pages/ManageRequests';
 import RoomList from './pages/RoomList';
-import RoomDetails from './pages/RoomDetails'; // Purpose: Import new RoomDetails page
+import RoomDetails from './pages/RoomDetails';
+import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
-import Footer from './components/Footer'; // Added Footer import
+import Footer from './components/Footer';
 
-// Purpose: Main App component with routing including new RoomDetails page
 function App() {
   return (
     <Router>
@@ -25,7 +27,7 @@ function App() {
           <Route path="/verify-email" element={<EmailVerification />} />
           <Route path="/" element={<RoomList />} />
           <Route path="/map" element={<Home />} />
-          <Route path="/rooms/:id" element={<RoomDetails />} /> {/* Purpose: Route for room details */}
+          <Route path="/rooms/:id" element={<RoomDetails />} />
           <Route
             path="/create-room"
             element={
@@ -50,8 +52,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute allowedRoles={['tenant']}>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-        <Footer /> {/* Added Footer component */}
+        <Footer />
       </div>
     </Router>
   );
