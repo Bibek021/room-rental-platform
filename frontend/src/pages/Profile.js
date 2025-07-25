@@ -1,8 +1,9 @@
-// javascript
-// Purpose: Updated Profile page to redirect to home page after saving tenant preferences, using getUserRole from utils/auth.
+// Purpose: Updated Profile page with toast notification before redirecting
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { setAuthHeader, getUserRole } from '../utils/auth';
 import './Profile.css';
 
@@ -52,10 +53,14 @@ const Profile = () => {
       });
       setSuccess('Preferences updated successfully');
       setError(null);
-      navigate('/'); // Redirect to home page after successful update
+      toast.success('Preferences updated successfully', {
+        onClose: () => navigate('/'), // Redirect after toast closes
+        autoClose: 2000, // 2 seconds
+      });
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update preferences');
       setSuccess(null);
+      toast.error(err.response?.data?.message || 'Failed to update preferences');
     }
   };
 
@@ -73,6 +78,7 @@ const Profile = () => {
 
   return (
     <div className="profile-container">
+      <ToastContainer />
       <h2>Update Preferences</h2>
       {error && <div className="error">{error}</div>}
       {success && <div className="success">{success}</div>}

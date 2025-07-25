@@ -1,10 +1,11 @@
-/* Purpose: Styles for the Profile page */
+/* Purpose: Styles for Profile page with toast support */
 .profile-container {
-    padding: 20px;
-    max-width: 600px;
-    margin: auto;
-  }
-  .error { color: red; }
-  .success { color: green; }
-  .profile-input { width: 100%; padding: 8px; margin-bottom: 15px; }
-  .button { padding: 10px 20px; }
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+}
+.error { color: red; }
+.success { color: green; }
+.profile-input { width: 100%; padding: 8px; margin-bottom: 15px; }
+.button { padding: 10px 20px; }
+.Toastify__toast-container { z-index: 9999; }
