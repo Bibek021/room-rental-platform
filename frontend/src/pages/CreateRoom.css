@@ -123,3 +123,6 @@
     font-size: 0.95rem;
   }
 }
+.container {
+  padding-bottom: 100px; /* was 30px or whatever—now large enough to clear footer */
+}
