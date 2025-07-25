@@ -1,64 +1,248 @@
 .container {
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 0 20px;
-  font-family: 'Arial', sans-serif;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 4rem 2rem 6rem; /* Increased padding for spaciousness and footer */
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f9fafb;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;
+  animation: fadeIn 0.5s ease-in;
+  position: relative;
+  z-index: 10;
 }
 
-.container h2 {
-  font-size: 1.8rem;
+.home-title {
+  font-size: 3rem; /* Larger for prominence */
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-title::before {
+  content: '\f015'; /* Font Awesome home icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.75rem;
+  font-size: 2.5rem;
+  color: #2563eb;
+}
+
+.error-message {
+  background-color: #fef2f2;
+  color: #dc2626;
+  font-size: 1.125rem; /* Slightly larger */
+  font-weight: 500;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.5s ease-in;
+  border: 1px solid #dc2626;
+}
+
+.error-message::before {
+  content: '\f06a'; /* Font Awesome exclamation-circle icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 1.125rem;
+}
+
+/* Three Options as Pseudo-Elements */
+.container::before {
+  content: '';
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.container::after {
+  content: 'Find a Room | List a Room | View Requests';
+  white-space: pre;
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  color: #1a3c5e;
-  margin-bottom: 20px;
+  color: #ffffff;
   text-align: center;
 }
 
-.container p[style*="color: red"] {
-  color: #d32f2f;
-  font-size: 0.9rem;
-  margin-bottom: 15px;
-  background-color: #fff5f5;
-  padding: 10px;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.container div[style*="height: 500px"] {
-  height: 500px;
-  background-color: #ffffff;
+.option-button {
+  background: linear-gradient(135deg, #2563eb, #60a5fa); /* Gradient for emphasis */
+  padding: 1.25rem 2.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.container div[style*="height: 500px"] .leaflet-container {
+.option-button:hover {
+  background: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.option-button::before {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.option-button:nth-child(1)::before {
+  content: '\f002'; /* Font Awesome search icon */
+}
+
+.option-button:nth-child(2)::before {
+  content: '\f0fe'; /* Font Awesome plus-square icon */
+}
+
+.option-button:nth-child(3)::before {
+  content: '\f46d'; /* Font Awesome clipboard-list icon */
+}
+
+.map-container {
+  position: relative;
+  height: 650px; /* Larger for "big page" */
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+  animation: fadeIn 0.5s ease-in;
+  z-index: 10;
+}
+
+.map-container:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-map {
   height: 100%;
   width: 100%;
+  z-index: 10;
 }
 
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  padding: 1.25rem;
+  background-color: #ffffff;
+}
+
+.leaflet-popup-content b {
+  color: #2563eb;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.leaflet-popup-content {
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Prevent CSS conflicts with Leaflet */
+.leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  z-index: 10 !important;
+}
+
+.leaflet-tile-container img {
+  width: unset !important;
+  height: unset !important;
+}
+
+.leaflet-control-container {
+  z-index: 20 !important;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .container {
-    padding: 0 15px;
-    margin: 15px;
+    max-width: 100%;
+    margin: 1rem;
+    padding: 3rem 2rem 4rem;
   }
 
-  .container h2 {
-    font-size: 1.5rem;
+  .home-title {
+    font-size: 2.25rem;
   }
 
-  .container div[style*="height: 500px"] {
-    height: 400px;
+  .error-message {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+
+  .container::after {
+    font-size: 1.25rem;
+    gap: 1.5rem;
+    flex-direction: column;
+  }
+
+  .option-button {
+    font-size: 1.25rem;
+    padding: 1rem 1.5rem;
+    min-width: 100%;
+  }
+
+  .map-container {
+    height: 500px;
   }
 }
 
 @media (max-width: 480px) {
-  .container h2 {
-    font-size: 1.3rem;
+  .container {
+    margin: 0.5rem;
+    padding: 2rem 1.5rem 3rem;
   }
 
-  .container div[style*="height: 500px"] {
-    height: 300px;
+  .home-title {
+    font-size: 1.75rem;
+  }
+
+  .home-title::before {
+    font-size: 1.5rem;
+  }
+
+  .error-message {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+
+  .container::after {
+    font-size: 1rem;
+    gap: 1rem;
+  }
+
+  .option-button {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .map-container {
+    height: 400px;
   }
 }

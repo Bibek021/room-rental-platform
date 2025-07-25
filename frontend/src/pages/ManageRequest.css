@@ -1,0 +1,222 @@
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px 20px 80px; /* Clear ~40px footer */
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in;
+  position: relative;
+  z-index: 1;
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a3c5e;
+  margin-bottom: 20px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h2::before {
+  content: '\f46d'; /* Font Awesome "View Requests" icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 10px;
+  font-size: 1.5rem;
+  color: #005f99;
+}
+
+.error {
+  color: #d32f2f !important; /* Override inline color: red */
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  background-color: #fff5f5;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aria-live: assertive;
+}
+
+.error::before {
+  content: '\f06a';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 8px;
+  font-size: 0.85rem;
+}
+
+.container > p:not(.error) {
+  font-size: 1rem;
+  color: #6c757d;
+  text-align: center;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+ul {
+  list-style: none !important; /* Override inline listStyle: none */
+  padding: 0 !important; /* Override inline padding: 0 */
+  margin: 20px 0;
+}
+
+li {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin: 15px 0 !important; /* Override inline margin */
+  padding: 15px !important; /* Override inline padding */
+  border: none !important; /* Override inline border */
+  transition: transform 0.3s ease;
+}
+
+li:hover {
+  transform: scale(1.02);
+}
+
+li p {
+  font-size: 0.9rem;
+  color: #495057;
+  margin: 5px 0;
+}
+
+li p strong {
+  color: #1a3c5e;
+  font-weight: 600;
+}
+
+li p:last-of-type {
+  margin-bottom: 10px;
+}
+
+li p:last-of-type span {
+  font-weight: 400;
+}
+
+li p:last-of-type span:contains("pending") {
+  color: #f57c00;
+}
+
+li p:last-of-type span:contains("approved") {
+  color: #2e7d32;
+}
+
+li p:last-of-type span:contains("rejected") {
+  color: #d32f2f;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+button:first-child {
+  background-color: #005f99;
+  color: #ffffff;
+  margin-right: 10px !important; /* Override inline marginRight */
+}
+
+button:first-child:hover {
+  background-color: #004a7c;
+  transform: translateY(-1px);
+}
+
+button:last-child {
+  background-color: #d32f2f;
+  color: #ffffff;
+}
+
+button:last-child:hover {
+  background-color: #b71c1c;
+  transform: translateY(-1px);
+}
+
+button:focus {
+  outline: 2px solid #005f99;
+  outline-offset: 2px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .container {
+    margin: 10px auto;
+    padding: 15px 15px 60px;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h2::before {
+    font-size: 1.2rem;
+  }
+
+  .error {
+    font-size: 0.8rem;
+  }
+
+  .container > p:not(.error) {
+    font-size: 0.9rem;
+  }
+
+  li {
+    padding: 12px;
+  }
+
+  button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  h2::before {
+    font-size: 1rem;
+  }
+
+  .container > p:not(.error) {
+    font-size: 0.85rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  button:first-child {
+    margin-right: 0 !important;
+  }
+}
