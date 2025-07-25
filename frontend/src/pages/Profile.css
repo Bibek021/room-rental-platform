@@ -1,11 +1,196 @@
-/* Purpose: Styles for Profile page with toast support */
-.profile-container {
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
+/* Profile.css */
+/* Purpose: Styles for Profile page with toast support and footer compatibility */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-.error { color: red; }
-.success { color: green; }
-.profile-input { width: 100%; padding: 8px; margin-bottom: 15px; }
-.button { padding: 10px 20px; }
-.Toastify__toast-container { z-index: 9999; }
+
+/* Ensure the body allows for full content visibility and footer placement */
+html, body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content container */
+.profile-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Prevent footer overlap */
+  padding-bottom: 5rem;
+  flex: 1; /* Allow content to take available space */
+}
+
+/* Error and success message styling */
+.error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.success {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Form input styling */
+.profile-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.profile-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Button styling */
+.button {
+  padding: 0.75rem 1.5rem;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  width: fit-content;
+  margin: 0 auto; /* Center the button */
+}
+
+.button:hover {
+  background: #2563eb;
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Toast notification styling */
+.Toastify__toast-container {
+  z-index: 9999; /* Maintain high z-index for toasts */
+  font-family: 'Inter', sans-serif;
+}
+
+.Toastify__toast {
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.Toastify__toast--success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.Toastify__toast--error {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Footer styling (assuming a basic footer exists) */
+footer {
+  background: #1a1a1a;
+  color: #ffffff;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  width: 100%;
+  position: sticky;
+  bottom: 0;
+  margin-top: auto; /* Push footer to bottom */
+  z-index: 1; /* Lower than toast notifications */
+}
+
+/* Ensure footer content is minimal */
+footer p {
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .profile-container {
+    margin: 1rem;
+    padding: 1.5rem;
+    padding-bottom: 4rem; /* Adjust for smaller footer */
+  }
+
+  .profile-input {
+    font-size: 0.9rem;
+    padding: 0.65rem;
+  }
+
+  .button {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  .error,
+  .success {
+    font-size: 0.85rem;
+  }
+
+  footer {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .profile-container {
+    padding: 1rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .profile-input {
+    font-size: 0.85rem;
+  }
+
+  .button {
+    font-size: 0.85rem;
+  }
+
+  .error,
+  .success {
+    font-size: 0.8rem;
+  }
+
+  footer {
+    font-size: 0.8rem;
+  }
+}
